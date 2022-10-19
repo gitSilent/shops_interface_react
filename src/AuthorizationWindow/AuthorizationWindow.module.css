@@ -1,0 +1,28 @@
+
+.authorization_window{
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    margin: 0 auto;
+    margin-top: 50px;
+}
+.auth_form{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    gap: 5px;
+}
+.auth_form input{
+    height: 35px;
+}
+.btn_enter{
+    margin-bottom: 10px;
+}
+.btn_reg{
+    width: 300px;
+}
+h2{
+    font-weight: 700;
+    width: max-content;
+    margin: 0 auto;
+}
