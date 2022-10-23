@@ -1,0 +1,9 @@
+.review_item_div{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.219);
+    border-radius: 30px;
+    padding-left:10px;
+    padding-top:5px;
+    margin-bottom: 10px;
+}

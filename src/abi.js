@@ -1,4 +1,9 @@
-let abi = [
+let abi =[
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
 	{
 		"inputs": [
 			{
@@ -78,6 +83,30 @@ let abi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "demotion_requests",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "requester",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "request_status",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "id_shop",
 				"type": "uint256"
 			},
@@ -116,252 +145,25 @@ let abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_review",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "text_reply",
-				"type": "string"
-			}
-		],
-		"name": "leaveReply",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_shop",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "qtyStars",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "title",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "review_text",
-				"type": "string"
-			}
-		],
-		"name": "leaveReview",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_shop",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_review",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_reply",
-				"type": "uint256"
-			}
-		],
-		"name": "likeReply",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_shop",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_review",
-				"type": "uint256"
-			}
-		],
-		"name": "likeReview",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
-		"name": "requestDemotion",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "shop_address",
-				"type": "address"
-			}
-		],
-		"name": "requestToPromotion",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "switchRoleBack",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "switchToBuyer",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_shop",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_review",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_reply",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_user",
-				"type": "uint256"
-			}
-		],
-		"name": "undoDisikeReply",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_shop",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_review",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_user",
-				"type": "uint256"
-			}
-		],
-		"name": "undoDislikeReview",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_shop",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_review",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_reply",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_user",
-				"type": "uint256"
-			}
-		],
-		"name": "undoLikeReply",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "id_shop",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_review",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "id_user",
-				"type": "uint256"
-			}
-		],
-		"name": "undoLikeReview",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "demotion_requests",
+		"name": "getDemotionRequests",
 		"outputs": [
 			{
-				"internalType": "address",
-				"name": "requester",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "request_status",
-				"type": "bool"
+				"components": [
+					{
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "request_status",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct contract_shop.DemotionRequest[]",
+				"name": "",
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -665,6 +467,93 @@ let abi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "id_review",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "text_reply",
+				"type": "string"
+			}
+		],
+		"name": "leaveReply",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id_shop",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "qtyStars",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "title",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "review_text",
+				"type": "string"
+			}
+		],
+		"name": "leaveReview",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id_shop",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_review",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_reply",
+				"type": "uint256"
+			}
+		],
+		"name": "likeReply",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id_shop",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_review",
+				"type": "uint256"
+			}
+		],
+		"name": "likeReview",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -688,6 +577,26 @@ let abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "requestDemotion",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "shop_address",
+				"type": "address"
+			}
+		],
+		"name": "requestToPromotion",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -752,7 +661,156 @@ let abi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "switchRoleBack",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "switchToBuyer",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id_shop",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_review",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_reply",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_user",
+				"type": "uint256"
+			}
+		],
+		"name": "undoDisikeReply",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id_shop",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_review",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_user",
+				"type": "uint256"
+			}
+		],
+		"name": "undoDislikeReview",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id_shop",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_review",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_reply",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_user",
+				"type": "uint256"
+			}
+		],
+		"name": "undoLikeReply",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "id_shop",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_review",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id_user",
+				"type": "uint256"
+			}
+		],
+		"name": "undoLikeReview",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "users",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "password",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "role",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "shop_relation",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "sub_role",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	}
 ];
-
 export default abi;

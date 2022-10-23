@@ -5,26 +5,43 @@ import AuthorizationWindow from './AuthorizationWindow';
 import UserAccount from './UserAccount';
 import abi from './abi'
 import Web3 from 'web3';
+import { useSelector, useDispatch } from 'react-redux';
+import {setContractAddress, setAllUsersArray, pushRegistredUsersArray} from './store/mainSlice'
+import AccountBody from './UserAccount/AccountBody';
 
 function App() {
-  let contractAddress, web3, contractInstance;
 
-  const [accounts_arr, setAccountsArr] = React.useState([]);
-    
+  const dispatch = useDispatch();
+  
+  let contractAddress, web3, contractInstance;    
 
-      contractAddress = "0x8f9BBE8FfeF5A9bE18C4981821EEe7B7811D9bd4";
-      web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
-      console.log(web3);
-      contractInstance = new web3.eth.Contract(abi, contractAddress);
-      
-      React.useEffect(()=>{
-        web3.eth.getAccounts()
+  contractAddress = "0x16BcfE05aFF6D64F96Caa8c67A80A69758086A61";
+  web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+  console.log(web3);
+  contractInstance = new web3.eth.Contract(abi, contractAddress);
+
+  dispatch(setContractAddress(contractAddress))
+  
+  React.useEffect(()=>{
+    let reg_users_arr = [];
+
+    web3.eth.getAccounts()
+    .then((val)=>{
+      dispatch(setAllUsersArray(val));
+
+       val.forEach((el)=>{
+        contractInstance.methods.users(el).call()
         .then((val)=>{
-          setAccountsArr(val)
-
-          console.log(accounts_arr)
+          if(val.role){
+            dispatch(pushRegistredUsersArray(el))
+          }
         })
-      },[])
+      })
+      console.log(reg_users_arr)
+     
+    })
+    
+  },[])
 
   //https://stackoverflow.com/questions/34735580/how-to-do-a-redirect-to-another-route-with-react-router
   return (
@@ -34,12 +51,13 @@ function App() {
         
           <Routes>
             <Route path='/' element={<AuthorizationWindow 
-            contractAddress={contractAddress}
             web3={web3}
             contractInstance={contractInstance}
-            accounts_arr={accounts_arr}
              />} />
-            <Route path='/account' element={<UserAccount />} />
+             
+            <Route path='/account' element={<UserAccount
+            web3={web3}
+            contractInstance={contractInstance}/>} />
               
           </Routes>
          

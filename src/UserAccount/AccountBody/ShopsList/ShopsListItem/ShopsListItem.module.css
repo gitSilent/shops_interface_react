@@ -1,0 +1,13 @@
+.div_item{
+    display: flex;
+    gap: 10px;
+    border: 1px solid black;
+    padding: 5px;
+    max-width: 90%;
+}
+li{
+    list-style-type: none;
+}
+.btn_showReviews{
+    margin-left: auto;
+}

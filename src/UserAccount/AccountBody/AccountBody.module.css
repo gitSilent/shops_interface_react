@@ -1,0 +1,30 @@
+.btn_request_promotion{
+    margin-top: 10px;
+}
+.btn_request_demotion{
+    margin-top: 10px;
+}
+.btn_adminFunc{
+    margin: 5px;
+}
+.div_promotion_requests{
+    overflow: auto;
+    max-height: 300px;
+    max-width: fit-content;
+    margin: 0 auto;
+    margin-bottom: 50px;
+}
+.div_demotion_requests{
+    overflow: auto;
+    max-height: 300px;
+    max-width: fit-content;
+    margin: 0 auto;
+
+}
+.h4_shopList{
+    margin: 0 auto;
+    width: fit-content;
+}
+.div_for_requests{
+    display: flex;
+}
