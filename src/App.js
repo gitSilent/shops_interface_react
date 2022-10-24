@@ -15,7 +15,7 @@ function App() {
   
   let contractAddress, web3, contractInstance;    
 
-  contractAddress = "0x16BcfE05aFF6D64F96Caa8c67A80A69758086A61";
+  contractAddress = "0x2391982F32f5e4DF71b9735408853248F96affe7";
   web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
   console.log(web3);
   contractInstance = new web3.eth.Contract(abi, contractAddress);

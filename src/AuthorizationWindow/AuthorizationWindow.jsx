@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import classes from './AuthorizationWindow.module.css'
 import {setCurrentAccountAddress} from '../store/mainSlice'
 
-function AuthorizationWindow(props){
+function AuthorizationWindow(props) {
+    
+//   const currentAccountAddress = useSelector(
+//     (state) => state.app_data.currentAccountAddress
+//   );
 
     function enterAccount(event){
         event.preventDefault();
@@ -19,6 +23,17 @@ function AuthorizationWindow(props){
                 alert("Неправильный логин или пароль")
             }
         })
+    }
+
+    function registration() {
+        console.log(loginInputValue);
+        console.log(passwordInputValue);
+        // console.log(currentAccountAddress);
+        props.contractInstance.methods.registration(loginInputValue, passwordInputValue).send({ from: loginInputValue, gas: 3000000 })
+            .then((val) => {
+            console.log(val)
+        })
+            
     }
 
     const all_accounts = useSelector (state => state.app_data.allUsersArray)
@@ -56,10 +71,11 @@ function AuthorizationWindow(props){
                    
                 </select>
                 <input
-                type="text"
-                className="auth-login-input"
-                placeholder="Enter your login"
-                value={loginInputValue}
+                    type="text"
+                    className="auth-login-input"
+                    placeholder="Enter your login"
+                    value={loginInputValue}
+                    onInput={(event) => { setLogin(event.target.value) }}
                 />
                 <input
                 type="text"
@@ -70,7 +86,7 @@ function AuthorizationWindow(props){
                 />
                 <button className={classes.btn_enter}>Войти</button>
             </form>
-            <button className={classes.btn_reg}>Регистрация</button>
+            <button className={classes.btn_reg} onClick={registration}>Регистрация</button>
         </div>
     )
 }
