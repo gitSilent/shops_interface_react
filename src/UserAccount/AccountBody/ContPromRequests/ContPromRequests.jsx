@@ -4,7 +4,7 @@ function ContPromRequests(props) {
     console.log(props.promArr)
   return (
     <div>
-        { props.promArr.lengtn > 0 ?
+        { props.promArr.length > 0 ?
             props.promArr.map((val,index)=>(
                 <div className='request_item'>
                     <p>ID: {index}</p>

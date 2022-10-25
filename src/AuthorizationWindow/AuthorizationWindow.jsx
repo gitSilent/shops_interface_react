@@ -25,15 +25,15 @@ function AuthorizationWindow(props) {
         })
     }
 
-    function registration() {
+    async function registration() {
         console.log(loginInputValue);
         console.log(passwordInputValue);
-        // console.log(currentAccountAddress);
-        props.contractInstance.methods.registration(loginInputValue, passwordInputValue).send({ from: loginInputValue, gas: 3000000 })
-            .then((val) => {
-            console.log(val)
-        })
-            
+        try {
+           await props.contractInstance.methods.registration(loginInputValue, passwordInputValue).send({ from: loginInputValue, gas: 3000000 })        
+        } catch (er) {
+            alert(er.message.split(":")[2].slice(8));
+            // console.log(er.message.split(":")[2].slice(8))
+        }  
     }
 
     const all_accounts = useSelector (state => state.app_data.allUsersArray)

@@ -21,7 +21,8 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole}
       for(let i = 0; i < val.length; i++){
         if(val[i].shop_address == choosenShopAddress){
           try{
-            await contractInstance.methods.requestToPromotion(choosenShopAddress).send({from:currentAccountAddress, gas:3000000})
+            const val_req = await contractInstance.methods.requestToPromotion(choosenShopAddress).send({ from: currentAccountAddress, gas: 3000000 });
+            console.log(val_req);
           }catch(er){
             console.log(er)
             alert("Вы уже подали заявку на повышение или не являетесь покупателем")
@@ -37,14 +38,19 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole}
   function requestDemotion(){
     contractInstance.methods.getShops().call()
     .then((val)=>{
-      val.forEach((el,index)=>{
+      val.forEach(async(el,index)=>{
         console.log(el.sellers)
         if(el.sellers.find(adr => adr == currentAccountAddress)){
           console.log(index)
-          contractInstance.methods.requestDemotion().send({from:currentAccountAddress, gas:3000000})
-          .then((val)=>{
-            console.log(val)
-          })
+          try {
+            await contractInstance.methods.requestDemotion().send({ from: currentAccountAddress, gas: 3000000 })
+            alert("Заявка успешно подана")
+          } catch(er) {
+            alert("Ошибка при отправке заявки: убедитесь, что вы не подавали заявку ранее")
+            console.log(er.message.split(":")[2].slice(8));
+
+          }
+          
           return
         }
       })
