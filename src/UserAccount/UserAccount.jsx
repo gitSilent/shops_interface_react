@@ -10,6 +10,7 @@ function UserAccount({web3, contractInstance}){
     const [address, setAddress] = useState() 
     const [balance, setBalance] = useState() 
     const [role, setRole] = useState() 
+    const [user, setUser] = useState() 
    
     const currentAccountAddress = useSelector (state => state.app_data.currentAccountAddress)
     
@@ -22,15 +23,22 @@ function UserAccount({web3, contractInstance}){
         })
         contractInstance.methods.users(currentAccountAddress).call()
         .then((val)=>{
-            setRole(val.role)
+            setUser(val);
+            if(val.sub_role != ""){
+                console.log("1 if")
+                setRole(val.sub_role)
+            }else{
+                console.log("2 if")
+                setRole(val.role)
+            }
         })
 
-    },[currentAccountAddress])
+    },[currentAccountAddress, user])
     return(
         <div>
 
             <AccountHeader web3={web3} contractInstance={contractInstance} userAddress={address} userBalance={balance} userRole={role}/>
-            <AccountBody web3={web3} contractInstance={contractInstance} userAddress={address} userBalance={balance} userRole={role}/>
+            <AccountBody web3={web3} contractInstance={contractInstance} userAddress={address} userBalance={balance} userRole={role} user={user} setUser={setUser}/>
         </div>
     )
 }

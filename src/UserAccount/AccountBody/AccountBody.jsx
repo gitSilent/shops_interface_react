@@ -4,7 +4,7 @@ import ShopsList from './ShopsList'
 import classes from './AccountBody.module.css'
 import ContPromRequests from './ContPromRequests'
 import ContDemRequests from './ContDemRequests'
-function AccountBody({web3, contractInstance, userAddress, userBalance,userRole}) {
+function AccountBody({web3, contractInstance, userAddress, userBalance,userRole, user, setUser}) {
 
   const [promArr, setPromArr] = useState([])
   const [demArr, setDemArr] = useState([])
@@ -122,6 +122,24 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole}
       setShopsArr(shops_arr);
     })
   }
+  function switchToBuyer(){
+    contractInstance.methods.switchToBuyer().send({from:currentAccountAddress, gas:3000000})
+    .then(()=>{
+      contractInstance.methods.users(currentAccountAddress).call()
+      .then((val)=>{
+        setUser(val)
+      })
+    })
+  }
+  function switchRoleBack(){
+    contractInstance.methods.switchRoleBack().send({from:currentAccountAddress, gas:3000000})
+    .then(()=>{
+      contractInstance.methods.users(currentAccountAddress).call()
+      .then((val)=>{
+        setUser(val)
+      })
+    })
+  }
   const currentAccountAddress = useSelector (state => state.app_data.currentAccountAddress)
 
   useEffect(()=>{
@@ -150,6 +168,9 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole}
         <button className={classes.btn_adminFunc} onClick={addNewAdmin}>Добавить нового администратора </button>
         <button className={classes.btn_adminFunc} onClick={addNewShop}>Добавить новый магазин </button>
         <button className={classes.btn_adminFunc} onClick={deleteShop}>Удалить магазин </button>
+        <button className={classes.btn_adminFunc} onClick={switchToBuyer  }>Переключиться на роль Покупатель </button>
+        
+        
 
           <div className={classes.div_for_requests}>
             <div className={classes.div_promotion_requests}>
@@ -170,6 +191,7 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole}
     case "seller":
       return (
       <div>
+        <button className={classes.btn_adminFunc} onClick={switchToBuyer  }>Переключиться на роль Покупатель </button>
         <button className={classes.btn_request_demotion} onClick={()=>{requestDemotion()}} >Подать заявку на понижение</button>
         <ShopsList contractInstance={contractInstance} web3={web3} role="seller" setShopsArr={setShopsArr} shopsArr={shopsArr}/>
 
@@ -178,6 +200,7 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole}
     case "buyer":
       return (
       <div>
+        {user.role != "buyer" ? <button onClick={switchRoleBack}>Переключиться к основной роли</button> : <></>}
         <button className={classes.btn_request_promotion} onClick={requestPromotion}>Подать заявку на повышение</button>
         <ShopsList contractInstance={contractInstance} web3={web3} role="buyer" setShopsArr={setShopsArr} shopsArr={shopsArr}/>
 
