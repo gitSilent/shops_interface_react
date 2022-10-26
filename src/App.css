@@ -41,3 +41,27 @@ button:active {
     -moz-box-shadow: 0px 2px 26px 24px rgba(5, 8, 11, 0.2) inset;
     box-shadow: 0px 2px 26px 24px rgba(5, 8, 11, 0.2) inset;
 }
+.btn_like{
+  background-color: rgb(74, 115, 228);
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn_dislike{
+ background-color: rgb(226, 80, 133);
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.div_likes_dislikes{
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+.clicked{
+  background-color: rgba(82, 81, 81, 0.649);
+}

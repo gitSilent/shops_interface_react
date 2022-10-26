@@ -25,10 +25,8 @@ function UserAccount({web3, contractInstance}){
         .then((val)=>{
             setUser(val);
             if(val.sub_role != ""){
-                console.log("1 if")
                 setRole(val.sub_role)
             }else{
-                console.log("2 if")
                 setRole(val.role)
             }
         })

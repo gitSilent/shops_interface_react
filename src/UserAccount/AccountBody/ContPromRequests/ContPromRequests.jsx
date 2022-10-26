@@ -1,7 +1,6 @@
 import React from 'react'
 import './ContPromRequests.css'
 function ContPromRequests(props) {
-    console.log(props.promArr)
   return (
     <div>
         { props.promArr.length > 0 ?

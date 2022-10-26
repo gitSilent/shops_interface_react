@@ -4,7 +4,7 @@ import './ModalReviews.css'
 import ReviewItem from './ReviewItem'
 
 function ModalReviews(props) {
-
+    // console.log(props)
 
     const [reviewsArr, setReviewsArr] = useState([])
     const currentAccountAddress = useSelector (state => state.app_data.currentAccountAddress)
@@ -44,7 +44,7 @@ function ModalReviews(props) {
             <div className='reviews_div'>
                 {
                     reviewsArr.length == 0 ? "Нет отзывов" : reviewsArr.map((el,index)=>(
-                        <ReviewItem item={el} id ={index}/>
+                        <ReviewItem item={el} id={index} role={props.role} contractInstance={props.contractInstance} idShop={props.id} />
                     ))
                 }
             </div>

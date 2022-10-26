@@ -1,7 +1,6 @@
 import React from 'react'
 
 function ContDemRequests(props) {
-    console.log(props.demArr)
 
   return (
     <div>
