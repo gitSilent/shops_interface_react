@@ -60,7 +60,7 @@ function AuthorizationWindow(props) {
                     let selected_option = event.target.closest("select").value;
                     setLogin(selected_option);
                 }}>
-                    <option disabled >Выберите пользователя</option>
+                    <option selected disabled>Выберите пользователя</option>
                      
                      {
                         

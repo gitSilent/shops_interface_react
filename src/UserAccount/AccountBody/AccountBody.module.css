@@ -28,3 +28,35 @@
 .div_for_requests{
     display: flex;
 }
+.div_choooseShop{
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    padding: 5px;
+    /* padding-top: 1px ; */
+    border-radius: 10px;
+    gap: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.219);
+}
+.div_choooseShop p{
+    margin: 0;
+}
+.div_addAdmin{
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    padding: 5px;
+    /* padding-top: 1px ; */
+    border-radius: 10px;
+    gap: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.219);
+    margin: 0 auto;
+    margin-top: 15px;
+
+}
+.admin_btns{
+    margin: 0 auto;
+    width: max-content;
+    margin-top: 10px;
+}

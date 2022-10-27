@@ -10,6 +10,10 @@ function ContPromRequests(props) {
                     <p>Запрос от: {val.requester}</p>
                     <p>Желаемый магазин: {val.shop_address}</p>
                     <p>Статус: {val.request_status == true ? ("активна") : ("не активна")}</p>
+                    {val.request_status == true ?
+                     <button onClick={()=>{props.confirmRequestPromotion(index)}}>Подтвердить заявку</button> 
+                    :
+                    <></>}
                 </div>   
             )) :
             (<>Пусто</>)

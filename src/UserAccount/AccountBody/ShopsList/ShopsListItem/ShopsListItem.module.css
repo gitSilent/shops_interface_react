@@ -12,3 +12,9 @@ li{
 .btn_showReviews{
     margin-left: auto;
 }
+.btn_delete{
+    background-color: rgb(204, 74, 74);
+}
+.btn_delete:hover{
+    background-color: rgb(129, 47, 47);
+}

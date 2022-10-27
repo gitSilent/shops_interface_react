@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {setCurrentAccountAddress} from '../../store/mainSlice'
+import './AccountHeader.css'
 
 function AccountHeader(props){
     
@@ -29,7 +30,7 @@ function AccountHeader(props){
             <h2 className="">Ваш адрес {props.userAddress}</h2>
             <h2 className="">Ваш баланс {props.userBalance} eth</h2>
             <h2 className="">Ваша роль: {props.userRole}</h2>
-            <button onClick={exitAccount}>Выйти</button>
+            <button onClick={exitAccount} className="btn_exit">Выйти</button>
         </div>
     )
 }

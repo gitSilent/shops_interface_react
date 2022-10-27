@@ -36,7 +36,7 @@ button:hover {
 	background-color:#3252b3;
 }
 button:active {
-	position:relative;
+	/* position:absolute; */
     -webkit-box-shadow: 0px 2px 26px 24px rgba(5, 8, 11, 0.2) inset;
     -moz-box-shadow: 0px 2px 26px 24px rgba(5, 8, 11, 0.2) inset;
     box-shadow: 0px 2px 26px 24px rgba(5, 8, 11, 0.2) inset;

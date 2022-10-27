@@ -24,6 +24,10 @@ function ShopsListItem(props) {
             <button onClick={()=>{
               setModalReviewsStatus(true);
             }} className={classes.btn_showReviews}>Отзывы</button>
+            {props.forRole == "admin" ? (
+              <button className={classes.btn_delete} onClick={()=>{props.deleteShop(props.index)}}>Удалить магазин</button>
+            ) : 
+            <></>}
         </div>
       </li>
       <ModalReviews status={modalReviewsStatus}

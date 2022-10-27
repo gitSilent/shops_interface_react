@@ -1,0 +1,348 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0;
+
+contract contract_shop{
+    
+    struct User{ //структура пользователя (админ, продавец или покупатель)
+        string password;//пароль
+        string role;//роль пользователя в системе
+        address shop_relation;//если роль == продавец, тов этом поле записывается адрес магазина к которому он причастен
+        string sub_role;//подроль, используется для функции смены ролей
+    }
+    struct Shop{//структура магазина
+        uint id_shop;//id магазина
+        address shop_address;//адрес магазина
+        string city;//город
+        address[] sellers;//массив продавцов магазина
+        Review[] reviews;//массив отзывов
+    }
+
+    Shop[] public shops; //массив структур магазинов
+    mapping(address => Shop) shops_mapping;//маппинг магазинов(используется для удобного поиска ID магазина по его адресу)
+    
+    struct Review{//структура отзыва
+        address review_sender;//адрес оставившего отзыв пользователя
+        uint qtyStars;//кол-во звезд в отзыве
+        string title;//заголовок отзыва
+        string review_text;//текст отзыва
+        Reply[] replies;//массив ответов на отзыв
+        address[] likes_users;//массив с адресами пользователей, поставивших лайки
+        address[] dislikes_users;//массив с адресами пользователей, поставивших дизлайки
+    }
+
+    Review[] public reviews_arr;//массив структур отзывов
+
+    struct Reply{//структура ответа на отзыв
+        address reply_sender;//адрес ответившего
+        string reply_text;//текст ответа
+        address[] likes_users;//массив с адресами пользователей, поставивших лайки
+        address[] dislikes_users;//массив с адресами пользователей, поставивших дизлайки
+    }
+
+    mapping(address => User) public users; // маппинг пользователей
+
+    struct PromotionRequest{//структура заявки на повышение(для покупателей)
+        address requester;//адрес отправившего заявку
+        address shop_address;//адрес желаемого магазина
+        bool request_status;//статус активности заявки
+    }
+    struct DemotionRequest{//структура заявки на понижение (для продавцов)
+        address requester;//адрес отправившего заявку
+        bool request_status;//статус активности заявки
+    }
+    PromotionRequest[] public promotion_requests;//массив заявок на повышение
+    DemotionRequest[] public demotion_requests;//массив заявок на понижение
+
+    constructor(){
+        
+        shops_mapping[0x5891d4fb3a23DC213BA7B38d0420Be66448e8658].id_shop = shops.length;
+        shops_mapping[0x5891d4fb3a23DC213BA7B38d0420Be66448e8658].city = "Moscow";
+
+        shops_mapping[0xAaD48Ed4104D89Cd5C77a01A0912A6BF9B3Ba775].id_shop = shops.length;
+        shops_mapping[0xAaD48Ed4104D89Cd5C77a01A0912A6BF9B3Ba775].city = "Kaluga";
+
+        Shop storage newShop = shops.push();//создание магазина с пустым массивом покупателей и отзывов
+        newShop.id_shop = shops.length-1;
+        newShop.shop_address = 0x5891d4fb3a23DC213BA7B38d0420Be66448e8658;
+        newShop.city = "Moscow";
+        newShop.sellers = new address[](0);
+
+        Shop storage newShop1 = shops.push();//создание магазина с пустым массивом покупателей и отзывов
+        newShop1.id_shop = shops.length-1;
+        newShop1.shop_address = 0xAaD48Ed4104D89Cd5C77a01A0912A6BF9B3Ba775;
+        newShop1.city = "Kaluga";
+        newShop1.sellers = new address[](0);
+
+
+
+        users[0x66B667951A9AB362dfdcB7521912eD2b34fE8c02] = User("1234", "admin", address(0),""); //добавление пользователя
+        users[0x859A98018Ab085707a207968E618060B5F479Bc8] = User("1234", "seller",0x5891d4fb3a23DC213BA7B38d0420Be66448e8658, "");//добавление пользователя
+        users[0xc691Cf57258CcA6CFC3863f011802034c58dC660] = User("1234", "buyer", address(0), "");//добавление пользователя
+
+        shops[shops_mapping[0x5891d4fb3a23DC213BA7B38d0420Be66448e8658].id_shop].sellers.push(0x859A98018Ab085707a207968E618060B5F479Bc8);//добавление в структура созданного магазина нового продавца
+
+    }
+    function getReview(uint id_shop, uint id_review) public view returns(Review memory){
+        return(shops[id_shop].reviews[id_review]);
+    }
+    function getSellersOfShop(uint id_shop) public view returns(address[] memory){//функция получения массива продавцов определенного магазина
+        return (shops[id_shop].sellers);
+    }
+    function switchToBuyer() public{//функция переключения на покупателя
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("admin")) || keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("seller")), "You can't switch your role");
+        require(keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("")), "Your role is already switched");
+
+        users[msg.sender].sub_role = "buyer";
+    }
+
+    function switchRoleBack() public{//функция переключения обратно на основную роль
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("admin")) || keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("seller")), "You can't switch your role");
+        require(keccak256(bytes(users[msg.sender].sub_role)) != keccak256(bytes("")), "Your role is not switched");
+
+        users[msg.sender].sub_role = "";
+    }
+
+    // Функционал администратора___________________________
+    function confirmPromotionRequest(uint id_request) public {//функция подтверждения заявки на повышение
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("admin")), "You are not an admin" );
+        // require(keccak256(bytes(users[promotion_requests[id_request].requester].role)) == keccak256(bytes("buyer")),"Choosen user is not a buyer");
+        require(id_request <= promotion_requests.length, "Inserted id doesn't exist");
+        require(promotion_requests[id_request].request_status == true, "Request is already confirmed");
+
+        address requester_address = promotion_requests[id_request].requester;
+        
+        users[requester_address].role = "seller";
+        users[requester_address].shop_relation = promotion_requests[id_request].shop_address;
+        users[requester_address].sub_role = ""; 
+
+        promotion_requests[id_request].request_status = false;
+
+        shops[shops_mapping[promotion_requests[id_request].shop_address].id_shop].sellers.push(requester_address);
+
+    }
+    function confirmDemotionRequest(uint id_request, uint id_seller) public {//функция подтверждения заявки на понижение
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("admin")), "You are not an admin" );
+        // require(keccak256(bytes(users[demotion_requests[id_request].requester].role)) == keccak256(bytes("seller")),"Choosen user is not a seller");
+        require(id_request <= demotion_requests.length, "Inserted id doesn't exist");
+        require(demotion_requests[id_request].request_status == true, "Request is already confirmed");
+
+        address requester_address = demotion_requests[id_request].requester;
+        
+        // shops[demotion_requests[id_request].shop_address]
+
+        users[requester_address].role = "buyer";
+        users[requester_address].shop_relation = address(0);
+        users[requester_address].sub_role = "";
+
+        shops[shops_mapping[users[requester_address].shop_relation].id_shop].sellers[id_seller] =
+        shops[shops_mapping[users[requester_address].shop_relation].id_shop].sellers[shops[shops_mapping[users[requester_address].shop_relation].id_shop].sellers.length - 1];
+        
+        shops[shops_mapping[users[requester_address].shop_relation].id_shop].sellers.pop();
+        // shops[shops_mapping[promotion_requests[id_request].shop_address].id_shop].sellers.push(requester_address);
+
+        demotion_requests[id_request].request_status = false;
+    }
+
+
+    function addNewAdmin(address user_address) public{//функция добавления нового администратора
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("admin")), "You are not an admin" );
+        require(keccak256(bytes(users[user_address].role)) != keccak256(bytes("admin")), "Choosen user is admin already");
+        require(keccak256(bytes(users[user_address].role)) != keccak256(bytes("")), "Choosen user doesn't exist");
+
+        if(users[user_address].shop_relation != address(0)){
+            for(uint i; i < shops[shops_mapping[users[user_address].shop_relation].id_shop].sellers.length;i++){
+                if(shops[shops_mapping[users[user_address].shop_relation].id_shop].sellers[i] == user_address){
+                    shops[shops_mapping[users[user_address].shop_relation].id_shop].sellers[i] =
+                    shops[shops_mapping[users[user_address].shop_relation].id_shop].sellers[shops[shops_mapping[users[user_address].shop_relation].id_shop].sellers.length - 1];
+                    
+                    shops[shops_mapping[users[user_address].shop_relation].id_shop].sellers.pop();
+                    
+                    users[user_address].role = "admin";
+                }
+            }
+           
+        }else{
+                users[user_address].role = "admin";
+            }
+    
+    }
+
+    function addNewShop(address shop_address, string memory city) public{//функция добавления нового магазина
+        require(keccak256(bytes(shops_mapping[shop_address].city)) == keccak256(bytes("")), "Shop with this address is already exists");
+        require(keccak256(bytes(users[shop_address].role)) == keccak256(bytes("")), "One of users is already use this address");
+        Shop storage newShop = shops.push();
+        newShop.id_shop = shops.length - 1;
+        newShop.shop_address = shop_address;
+        newShop.city = city;
+        newShop.sellers = new address[](0);
+        
+        // shops.push(Shop(shop_address, city,new address[](0)));
+        shops_mapping[shop_address].id_shop = shops.length;
+        shops_mapping[shop_address].city = city;
+            
+    }
+
+    function deleteShop(uint id_shop) public{//функция удаления магазина
+        require(id_shop < shops.length, "Invalid shop id");
+
+        for(uint i = 0; i < shops[id_shop].sellers.length; i++ ){
+            users[shops[id_shop].sellers[i]].role = "buyer";
+            users[shops[id_shop].sellers[i]].sub_role = "";
+            users[shops[id_shop].sellers[i]].shop_relation = address(0);
+        }
+
+        delete shops_mapping[shops[id_shop].shop_address];
+
+        shops[id_shop] = shops[shops.length - 1];
+        shops.pop();
+
+    }
+
+    //_____________________________________________________
+
+    // Функционал покупателя_______________________________
+
+    function registration(address login, string memory password) public{//функция регистрации
+        require(keccak256(bytes(users[login].role)) == keccak256(bytes("")), "This address already registred");
+        require(keccak256(bytes(shops_mapping[login].city)) == keccak256(bytes("")), "This address already registred as shop");
+        users[login] = User(password, "buyer", address(0), "");
+    }
+
+    function leaveReview(uint id_shop, uint qtyStars, string memory title, string memory review_text) public{//функция оставления отзыва магазину
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        , "You must be a buyer to leave reviews");
+        require(qtyStars <= 10, "Invalid stars quantity");
+        require(id_shop < shops.length, "Invalid shop id");
+
+        Review storage newReview = reviews_arr.push();
+        newReview.review_sender = msg.sender;
+        newReview.qtyStars = qtyStars;
+        newReview.title = title;
+        newReview.review_text = review_text;
+        newReview.likes_users = new address[](0);
+        newReview.dislikes_users = new address[](0);
+
+        shops[id_shop].reviews.push(newReview);
+
+    }
+
+    function likeReview(uint id_shop, uint id_review) public{//поставить лайк отзыву
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to like reviews");
+        shops[id_shop].reviews[id_review].likes_users.push(msg.sender);
+    }
+    function likeReply(uint id_shop, uint id_review, uint id_reply) public{//поставить лайк ответу на отзыв
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to like reviews");
+         shops[id_shop].reviews[id_review].replies[id_reply].likes_users.push(msg.sender);
+    }
+
+    function dislikeReview(uint id_shop, uint id_review) public{//поставить дизлайк отзыву
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to like reviews");
+        shops[id_shop].reviews[id_review].dislikes_users.push(msg.sender);
+    }
+    function dislikeReply(uint id_shop, uint id_review,uint id_reply) public{//поставить дизлайк ответу на отзыв
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to like reviews");
+        shops[id_shop].reviews[id_review].replies[id_reply].dislikes_users.push(msg.sender);
+
+    }
+
+    function undoLikeReview(uint id_shop, uint id_review,uint id_user) public{//убрать лайк у отзыва
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to like reviews");
+
+        shops[id_shop].reviews[id_review].likes_users[id_user] =
+        shops[id_shop].reviews[id_review].likes_users[shops[id_shop].reviews[id_review].likes_users.length - 1];
+
+        shops[id_shop].reviews[id_review].likes_users.pop();
+       
+    }
+    function undoLikeReply(uint id_shop, uint id_review, uint id_reply, uint id_user) public{//убрать лайк у ответа на отзыв
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to like reviews");
+
+        shops[id_shop].reviews[id_review].replies[id_reply].likes_users[id_user] =
+        shops[id_shop].reviews[id_review].replies[id_reply].likes_users[shops[id_shop].reviews[id_review].replies[id_reply].likes_users.length - 1];
+
+        shops[id_shop].reviews[id_review].replies[id_reply].likes_users.pop();
+       
+    }
+
+    function undoDislikeReview(uint id_shop, uint id_review,uint id_user) public{//убрать дизлайк у отзыва
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to dislike reviews");
+
+        shops[id_shop].reviews[id_review].dislikes_users[id_user] =
+        shops[id_shop].reviews[id_review].dislikes_users[shops[id_shop].reviews[id_review].dislikes_users.length - 1];
+
+        shops[id_shop].reviews[id_review].dislikes_users.pop();
+        
+    }
+    function undoDisikeReply(uint id_shop, uint id_review, uint id_reply, uint id_user) public{//убрать лайк у ответа на отзыв
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")) || keccak256(bytes(users[msg.sender].sub_role)) == keccak256(bytes("buyer"))
+        ,"You must be a buyer to like reviews");
+
+        shops[id_shop].reviews[id_review].replies[id_reply].dislikes_users[id_user] =
+        shops[id_shop].reviews[id_review].replies[id_reply].dislikes_users[shops[id_shop].reviews[id_review].replies[id_reply].dislikes_users.length - 1];
+
+        shops[id_shop].reviews[id_review].replies[id_reply].dislikes_users.pop();
+       
+    }
+   
+
+    function requestToPromotion(address shop_address) public{//подать заявку на повышение
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("buyer")));
+        for(uint i;i < promotion_requests.length; i++){
+            if(msg.sender == promotion_requests[i].requester && promotion_requests[i].request_status == true){
+                require(msg.sender != promotion_requests[i].requester,"Request to promotion already created" );
+            }
+        }
+        promotion_requests.push(PromotionRequest(msg.sender,shop_address, true));
+    }
+
+
+    // Функционал продавца_______________________________
+
+    function requestDemotion() public{//подать заявку на понижение
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("seller")));
+        for(uint i;i < demotion_requests.length; i++){
+            if(msg.sender == demotion_requests[i].requester && demotion_requests[i].request_status == true ){
+                require(msg.sender != demotion_requests[i].requester,"Request to demotion already created" );
+            }
+        }
+
+        demotion_requests.push(DemotionRequest(msg.sender, true));
+        
+    }
+    function leaveReply(uint id_review, string memory text_reply) public{//оставить ответ на отзыв
+        require(keccak256(bytes(users[msg.sender].role)) == keccak256(bytes("seller")));
+        uint id_shop = shops_mapping[users[msg.sender].shop_relation].id_shop;
+        require(shops[id_shop].reviews.length > 0, "Shop has no reviews");
+        // shops_mapping[users[msg.sender].shop_relation].id_shop
+        shops[id_shop].reviews[id_review].replies.push(Reply(msg.sender,text_reply, new address[](0), new address[](0)));
+    }
+
+    // _________________________________________________
+    
+    function getShops() public view returns(Shop[] memory){//получить массив магазинов
+        return (shops);
+    }
+    function getShop(uint id_shop) public view returns(Shop memory){//получить структуру определенного магазина
+        return (shops[id_shop]);
+    }
+    function getUser(address user_adr) public view returns(User memory){
+        return(users[user_adr]);
+    }
+    function getPromotionRequests() public view returns(PromotionRequest[] memory){//получить массив заявок на повышение
+        return(promotion_requests);
+    }
+     function getDemotionRequests() public view returns(DemotionRequest[] memory){//получить массив заявок на понижение
+        return(demotion_requests);
+    }
+
+
+
+}

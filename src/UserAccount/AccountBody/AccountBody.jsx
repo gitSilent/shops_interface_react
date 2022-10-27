@@ -10,19 +10,25 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole,
   const [demArr, setDemArr] = useState([])
 
   const [shopsArr, setShopsArr] = useState([])
+  const [choosenShopToPromotion, setChoosenShopToPromotion] = useState();
+  const [choosenFutureAdmin, setChoosenFutureAdmin] = useState();
+
+  const registredUsersArray = useSelector (state => state.app_data.registredUsersArray)
+
+  const [notAdmins, setNotAdmins] = useState([]);
 
 
   function requestPromotion(){
-    const choosenShopAddress = prompt("Введите адрес магазина, куда желате устроиться")
     
     contractInstance.methods.getShops().call()
     .then(async (val)=>{
       console.log(val)
       for(let i = 0; i < val.length; i++){
-        if(val[i].shop_address == choosenShopAddress){
+        if(val[i].shop_address == choosenShopToPromotion){
           try{
-            const val_req = await contractInstance.methods.requestToPromotion(choosenShopAddress).send({ from: currentAccountAddress, gas: 3000000 });
+            const val_req = await contractInstance.methods.requestToPromotion(choosenShopToPromotion).send({ from: currentAccountAddress, gas: 3000000 });
             console.log(val_req);
+            return
           }catch(er){
             console.log(er)
             alert("Вы уже подали заявку на повышение или не являетесь покупателем")
@@ -70,10 +76,8 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole,
       })
     })
   }
-  async function confirmRequestDemotion(){
-    const id = prompt("Введите ID заявки на понижение");
+  async function confirmRequestDemotion(id){
     const dem_reqs = await contractInstance.methods.getDemotionRequests().call()
-    console.log(dem_reqs)
     contractInstance.methods.getShops().call()
     .then((val)=>{
       val.forEach(async (el,index)=>{
@@ -92,14 +96,26 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole,
   }
 
   function addNewAdmin(){
-    const adr = prompt("Введите адрес пользователя, которого хотите сделать администратором")
-
+    // const adr = prompt("Введите адрес пользователя, которого хотите сделать администратором")
+    const adr = choosenFutureAdmin;
     contractInstance.methods.addNewAdmin(adr).send({from:currentAccountAddress, gas:3000000})
     .then((val)=>{
       console.log(val)
+    }).then(()=>{
+      fillNotAdminsArray()
     })
   }
 
+  function fillNotAdminsArray(){
+    let not_admins = [];
+    registredUsersArray.forEach(async(el)=>{
+      let user = await contractInstance.methods.getUser(el).call();
+      if(user.role != "admin"){
+        not_admins.push(el)
+      }
+     })
+     setNotAdmins(not_admins)
+  }
   function addNewShop(){
     const shop_address = prompt("Введите адрес будущего магазина")
     const city = prompt("Введите город будущего магазина")
@@ -113,14 +129,17 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole,
       setShopsArr(shops_arr);
     })
   }
-  function deleteShop(){
-    const id_shop = prompt("Введите ID удаляемого магазина");
-
-    contractInstance.methods.deleteShop(id_shop).send({from:currentAccountAddress, gas:3000000})
-    .then(async()=>{
-      const shops_arr = await contractInstance.methods.getShops().call();
-      setShopsArr(shops_arr);
-    })
+  function deleteShop(id_shop){
+    // const id_shop = prompt("Введите ID удаляемого магазина");
+    const confirmation = window.confirm("Подтвердите удаление магазина")
+    if(confirmation){
+      contractInstance.methods.deleteShop(id_shop).send({from:currentAccountAddress, gas:3000000})
+      .then(async()=>{
+        const shops_arr = await contractInstance.methods.getShops().call();
+        setShopsArr(shops_arr);
+      })
+    }
+   
   }
   function switchToBuyer(){
     contractInstance.methods.switchToBuyer().send({from:currentAccountAddress, gas:3000000})
@@ -153,6 +172,21 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole,
     .then((val)=>{
       setDemArr(val);
     })
+
+    contractInstance.methods.getShops().call()
+    .then((val)=>{
+      setShopsArr(val);
+    })
+
+    let not_admins = [];
+    registredUsersArray.forEach(async(el)=>{
+      let user = await contractInstance.methods.getUser(el).call();
+      if(user.role != "admin"){
+        not_admins.push(el)
+      }
+     })
+     setNotAdmins(not_admins)
+    // 
   },[])
 
 
@@ -160,31 +194,36 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole,
     case "admin":
       return (
       <div>
-        <button className={classes.btn_adminFunc} onClick={()=>{
-          const id = prompt("Введите ID подтверждаемой заявки");
-          confirmRequestPromotion(id)
-          }}>Подтвердить запрос на повышение </button>
-        <button className={classes.btn_adminFunc} onClick={confirmRequestDemotion}>Подтвердить запрос на понижение </button>
-        <button className={classes.btn_adminFunc} onClick={addNewAdmin}>Добавить нового администратора </button>
-        <button className={classes.btn_adminFunc} onClick={addNewShop}>Добавить новый магазин </button>
-        <button className={classes.btn_adminFunc} onClick={deleteShop}>Удалить магазин </button>
-        <button className={classes.btn_adminFunc} onClick={switchToBuyer  }>Переключиться на роль Покупатель </button>
-        
-        
+        <div className={classes.admin_btns}>
 
+        <button className={classes.btn_adminFunc} onClick={addNewShop}>Добавить новый магазин </button>
+        <button className={classes.btn_adminFunc} onClick={switchToBuyer  }>Переключиться на роль Покупатель </button>
+        </div>
+        <div className={classes.div_addAdmin}>
+        <button className={classes.btn_adminFunc} onClick={addNewAdmin}>Добавить нового администратора </button>
+          <select name="" id="" onChange={(event)=>{setChoosenFutureAdmin(event.target[event.target.selectedIndex].textContent)}}>
+          <option value="title" selected disabled>Выберите пользователя</option>
+            {
+            notAdmins.map((el)=>(
+              <option>{el}</option>
+            ))
+            }
+          </select>
+        </div>
+        
           <div className={classes.div_for_requests}>
             <div className={classes.div_promotion_requests}>
               <h4>Запросы на повышение</h4>
-              <ContPromRequests promArr={promArr}/>
+              <ContPromRequests promArr={promArr} confirmRequestPromotion={confirmRequestPromotion}/>
             </div>
             <div className={classes.div_demotion_requests}>
               <h4>Запросы на понижение</h4>
-              <ContDemRequests demArr={demArr} />
+              <ContDemRequests demArr={demArr} confirmRequestDemotion={confirmRequestDemotion}/>
             </div>
 
           </div>
        <h4 className={classes.h4_shopList}>Список магазинов</h4>
-            <ShopsList contractInstance={contractInstance} web3={web3} role="admin" setShopsArr={setShopsArr} shopsArr={shopsArr}/>
+            <ShopsList contractInstance={contractInstance} web3={web3} role="admin" setShopsArr={setShopsArr} shopsArr={shopsArr} deleteShop={deleteShop}/>
       </div>
 
       )
@@ -201,7 +240,16 @@ function AccountBody({web3, contractInstance, userAddress, userBalance,userRole,
       return (
       <div>
         {user.role != "buyer" ? <button onClick={switchRoleBack}>Переключиться к основной роли</button> : <></>}
-        <button className={classes.btn_request_promotion} onClick={requestPromotion}>Подать заявку на повышение</button>
+        <div className={classes.div_choooseShop}>
+          <p>Подать заявку на повышение</p>
+          <button className={classes.btn_request_promotion} onClick={requestPromotion}>Подать заявку на повышение</button>
+          <select name="" id="" onChange={(event)=>{setChoosenShopToPromotion(event.target[event.target.selectedIndex].textContent)}}>
+          <option value="title" selected disabled>Выберите магазин</option>
+            {shopsArr.map((el,index)=>(
+              <option value={index}>{el.shop_address}</option>
+            ))}
+          </select>
+        </div>
         <ShopsList contractInstance={contractInstance} web3={web3} role="buyer" setShopsArr={setShopsArr} shopsArr={shopsArr}/>
 
       </div>

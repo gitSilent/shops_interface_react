@@ -28,7 +28,7 @@ function ShopsList(props) {
   return (
     <ul>
         {props.shopsArr.map((el,index)=>(
-            <ShopsListItem shop={props.shopsArr[index]} forRole={props.role} updateShopsArr={updateShopsArr} contractInstance={props.contractInstance} index={index}/>
+            <ShopsListItem shop={props.shopsArr[index]} forRole={props.role} updateShopsArr={updateShopsArr} contractInstance={props.contractInstance} index={index} deleteShop={props.deleteShop}/>
         ))}
     </ul>
   )

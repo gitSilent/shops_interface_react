@@ -11,6 +11,10 @@ function ContDemRequests(props) {
             <p>ID: {index}</p>
             <p>Запрос от: {val.requester}</p>
             <p>Статус: {val.request_status == true ? ("активна") : ("не активна")}</p>
+            {val.request_status == true ?
+                     <button onClick={()=>{props.confirmRequestDemotion(index)}}>Подтвердить заявку</button> 
+                    :
+                    <></>}
         </div>   
     )) :
     (<>Пусто</>)
